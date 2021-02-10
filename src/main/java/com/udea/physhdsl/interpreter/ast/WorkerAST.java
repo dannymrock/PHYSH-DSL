@@ -1,11 +1,11 @@
-package com.udea.degreework.interpreter.ast;
+package com.udea.physhdsl.interpreter.ast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.udea.degreework.Worker;
+import com.udea.physhdsl.Worker;
 
 public class WorkerAST implements ASTNode {
 

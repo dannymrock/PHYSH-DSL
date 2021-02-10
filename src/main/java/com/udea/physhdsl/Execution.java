@@ -1,4 +1,4 @@
-package com.udea.degreework;
+package com.udea.physhdsl;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.udea.degreework.model.QAPModel;
-import com.udea.degreework.solver.Metaheuristic;
+import com.udea.physhdsl.model.QAPModel;
+import com.udea.physhdsl.solver.Metaheuristic;
 
 public class Execution {
 	private static final Logger LOGGER = Logger.getLogger( Execution.class.getName() );

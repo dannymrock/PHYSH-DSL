@@ -1,10 +1,10 @@
-package com.udea.degreework.interpreter.ast;
+package com.udea.physhdsl.interpreter.ast;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.udea.degreework.Pool;
+import com.udea.physhdsl.Pool;
 
 public class PoolAST implements ASTNode {
 

@@ -1,4 +1,4 @@
-package com.udea.degreework;
+package com.udea.physhdsl;
 
 import java.util.ArrayList;
 import java.util.List;

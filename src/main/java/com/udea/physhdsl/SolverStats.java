@@ -1,7 +1,7 @@
-package com.udea.degreework;
+package com.udea.physhdsl;
 
-import com.udea.degreework.solver.Metaheuristic;
-import com.udea.degreework.solver.Metaheuristic.Type;
+import com.udea.physhdsl.solver.Metaheuristic;
+import com.udea.physhdsl.solver.Metaheuristic.Type;
 
 public class SolverStats {
 	

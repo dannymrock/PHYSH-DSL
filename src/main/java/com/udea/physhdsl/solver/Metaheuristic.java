@@ -1,7 +1,7 @@
-package com.udea.degreework.solver;
+package com.udea.physhdsl.solver;
 
-import com.udea.degreework.ParamInformation;
-import com.udea.degreework.model.QAPModel;
+import com.udea.physhdsl.ParamInformation;
+import com.udea.physhdsl.model.QAPModel;
 
 import java.util.HashMap;
 import java.util.Map;

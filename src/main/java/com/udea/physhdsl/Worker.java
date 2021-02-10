@@ -1,7 +1,7 @@
-package com.udea.degreework;
+package com.udea.physhdsl;
 
-import com.udea.degreework.model.QAPModel;
-import com.udea.degreework.solver.Metaheuristic;
+import com.udea.physhdsl.model.QAPModel;
+import com.udea.physhdsl.solver.Metaheuristic;
 
 import java.util.Date;
 import java.util.List;

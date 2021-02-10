@@ -1,6 +1,6 @@
-package com.udea.degreework;
+package com.udea.physhdsl;
 
-import com.udea.degreework.solver.Metaheuristic;
+import com.udea.physhdsl.solver.Metaheuristic;
 
 public class ContextInformation {
 	int[] variables;
