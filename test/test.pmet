@@ -2,15 +2,15 @@ Config {
     size: 40
     model: QAP
     target: 3139370
-    maxTime: 60000
+    maxTime: 300000
     updatePoolI: 25000
     requestPoolI: 50000
-    autoParam: 1000 
+    autoParam: 10000 
     numberOfTeams: 2
     numberOfWorkersPerTeam: 4
     equalNumberOfWorkersPerTeam: true
 	filePath: /Users/dannymunera/Documents/repos/degree-work/tai40a.qap
-	sampleSize: 5
+	sampleSize: 10
 	errorRange: 1
 	RoTS.tabuDurationFactor: -1.0
 	RoTS.aspirationFactor: -1.0

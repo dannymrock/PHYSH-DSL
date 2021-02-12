@@ -245,7 +245,7 @@ public class Metaheuristic {
         }
     }
     
-    public void adaptParameters(ParamInformation paramInfo) {
+    public void adaptParameters(ParamInformation paramInfo, double divPercentageLimit) {
     	LOGGER.log(Level.WARNING, "must be overwritten by each descendant");
     }
 

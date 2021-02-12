@@ -241,13 +241,13 @@ public class RoTSearch extends Metaheuristic{
     //solverState = this.createSolverState();
     //this.solver.communicateLM( new State(sz, this.currentCost, cop.getVariables() as Valuation(sz), here.id as Int, solverState) );
     //}
-    public void adaptParameters(ParamInformation paramInfo) {
-    	double diversify_percentage_limit  =  1; //is necessary calculate
+    public void adaptParameters(ParamInformation paramInfo, double divPercentageLimit) {
+    	//ouble diversify_percentage_limit  =  paramInfo.getCurrentDivLimit(); //is necessary calculate
     	//TODO: Adapt Parameters according to  info received
-    	LOGGER.log(Level.INFO, "param in ROTS, gain:"+paramInfo.gain()+" distance: "+paramInfo.distance());
+    	LOGGER.log(Level.INFO, "param in ROTS, gain:"+paramInfo.gain()+" distance: "+paramInfo.distance()+" divLimit: "+ divPercentageLimit);
 		if (paramInfo.gain() > 0) {
 
-			if (paramInfo.gain() <= diversify_percentage_limit && paramInfo.distance() > 0.66) {
+			if (paramInfo.gain() <= divPercentageLimit && paramInfo.distance() > 0.66) {
 				// is necessary diversify
 				tabuDuration = tabuDuration + Math.floorDiv(size, 2);
 				aspiration = aspiration + Math.floorDiv(size * size, 2);

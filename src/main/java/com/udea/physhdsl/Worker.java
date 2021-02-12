@@ -240,7 +240,7 @@ public class Worker extends RecursiveAction {
 
         bestCost = currentCost; //Best solution is the initial solution
         if (autoParam) {
-        	paramInfo = new ParamInformation(currentCost, metaheuristic.getVariables());        
+        	paramInfo = new ParamInformation(currentCost, metaheuristic.getVariables(), (double) maxTime);        
         }
 
         while(currentCost >= 0){
@@ -377,7 +377,8 @@ public class Worker extends RecursiveAction {
          
             if(autoParam) {
             	// Adapt Parameters
-            	metaheuristic.adaptParameters(paramInfo);
+            	double currentTimems = (System.nanoTime() - initialTime)/1e6;
+            	metaheuristic.adaptParameters(paramInfo, paramInfo.getCurrentDivLimit(currentTimems));
             	paramInfo.setNewInitial(currentCost, metaheuristic.variables);
             }         
         }
@@ -394,7 +395,8 @@ public class Worker extends RecursiveAction {
     public void adaptParameters() {
     	if(nIter % paramI == 0){
     		// Adapt Parameters
-        	metaheuristic.adaptParameters(paramInfo);
+    		double currentTimems = (System.nanoTime() - initialTime)/1e6; 
+        	metaheuristic.adaptParameters(paramInfo, paramInfo.getCurrentDivLimit(currentTimems));
         	paramInfo.setNewInitial(currentCost, metaheuristic.variables);
     	}
     }

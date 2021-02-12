@@ -340,13 +340,13 @@ public class EOSearch extends Metaheuristic{
         }
     }
     
-    public void adaptParameters(ParamInformation paramInfo) {
-    	double diversify_percentage_limit  =  1; //is necessary calculate depends on the current iteration
+    public void adaptParameters(ParamInformation paramInfo, double divPercentageLimit) {
+    	//double diversify_percentage_limit  =  1; //is necessary calculate depends on the current iteration
     	//TODO: Adapt Parameters according to  info received
     	LOGGER.log(Level.INFO, "param in ROTS, gain:"+paramInfo.gain()+" distance: "+paramInfo.distance());
     	if(paramInfo.gain() > 0) {
     	
-			if (paramInfo.gain() <= diversify_percentage_limit && paramInfo.distance() > 0.66) {
+			if (paramInfo.gain() <= divPercentageLimit && paramInfo.distance() > 0.66) {
 				// is necessary diversify
 				if (pdfS == Func.POWER) {
 					tau -= (powUp - powDown) * 0.06;//6% change  the value of tau

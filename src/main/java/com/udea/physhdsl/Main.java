@@ -22,7 +22,7 @@ public class Main {
 		String program = args.length > 1 ? args[1] : "test/test." + EXTENSION;
 		
 		// set logger level 
-		Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(Level.FINER));
+		Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(Level.OFF));
 		
 		LOGGER.log(Level.INFO,"Interpreting file " + program);
 		
