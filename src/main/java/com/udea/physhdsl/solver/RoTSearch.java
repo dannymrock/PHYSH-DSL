@@ -241,8 +241,38 @@ public class RoTSearch extends Metaheuristic{
     //solverState = this.createSolverState();
     //this.solver.communicateLM( new State(sz, this.currentCost, cop.getVariables() as Valuation(sz), here.id as Int, solverState) );
     //}
-    
     public void adaptParameters(ParamInformation paramInfo) {
+    	double diversify_percentage_limit  =  1; //is necessary calculate
+    	//TODO: Adapt Parameters according to  info received
+    	LOGGER.log(Level.INFO, "param in ROTS, gain:"+paramInfo.gain()+" distance: "+paramInfo.distance());
+		if (paramInfo.gain() > 0) {
+
+			if (paramInfo.gain() <= diversify_percentage_limit && paramInfo.distance() > 0.66) {
+				// is necessary diversify
+				tabuDuration = tabuDuration + Math.floorDiv(size, 2);
+				aspiration = aspiration + Math.floorDiv(size * size, 2);
+			} else {
+				// is necessary intensify
+				tabuDuration = tabuDuration - Math.floorDiv(size, 3);
+				aspiration = aspiration - Math.floorDiv(size, 2);
+			}
+
+			// when parameters overpass the maximum values
+			if (tabuDuration > 20 * size) {
+				tabuDuration = ThreadLocalRandom.current().nextInt(16 * size) + 4 * size; // 4n to 20n
+			}
+
+			if (aspiration > 10 * size * size) {
+				aspiration = ThreadLocalRandom.current().nextInt(9 * size * size) + size * size; // n*n to 10*n*n
+			}
+
+		} else {
+			// necessary create new parameters or continue with the same
+		}
+    	
+    }
+    
+    public void adaptParameters2(ParamInformation paramInfo) {
     	//TODO: Adapt Parameters according to  info received
     	LOGGER.log(Level.INFO, "param in ROTS, gain:"+paramInfo.gain()+" distance: "+paramInfo.distance());
     	if(paramInfo.gain() <= 0.1) {

@@ -341,6 +341,69 @@ public class EOSearch extends Metaheuristic{
     }
     
     public void adaptParameters(ParamInformation paramInfo) {
+    	double diversify_percentage_limit  =  1; //is necessary calculate depends on the current iteration
     	//TODO: Adapt Parameters according to  info received
+    	LOGGER.log(Level.INFO, "param in ROTS, gain:"+paramInfo.gain()+" distance: "+paramInfo.distance());
+    	if(paramInfo.gain() > 0) {
+    	
+			if (paramInfo.gain() <= diversify_percentage_limit && paramInfo.distance() > 0.66) {
+				// is necessary diversify
+				if (pdfS == Func.POWER) {
+					tau -= (powUp - powDown) * 0.06;//6% change  the value of tau
+
+				} else if (pdfS == Func.EXPONENTIAL) {
+					tau -= (expUp - expDown) * 0.06;
+				} else if (pdfS == Func.GAMMA) {
+					tau += (gammaUp - gammaDown) * 0.06;
+				}
+
+			} else {
+				// is necessary intensify
+				if (pdfS == Func.POWER) {
+					tau += (powUp - powDown) * 0.06;
+				} else if (pdfS == Func.EXPONENTIAL) {
+					tau += (expUp - expDown) * 0.06;
+				} else if (pdfS == Func.GAMMA) {
+					tau -= (gammaUp - gammaDown) * 0.06;
+				}
+
+			}
+			
+			// when tau overpass the maximum values
+			if (pdfS == Func.POWER && tau > powUp) {
+				tau = powDown + (powUp - powDown) * ThreadLocalRandom.current().nextDouble();
+			} else if (pdfS == Func.EXPONENTIAL && tau > expUp) {
+				tau = expDown + (expUp - expDown) * ThreadLocalRandom.current().nextDouble();
+			} else if (pdfS == Func.GAMMA && tau > gammaUp) {
+				tau = gammaDown + (gammaUp - gammaDown) * ThreadLocalRandom.current().nextDouble();
+			}
+			
+			// when tau is less than the lower limit
+			if (pdfS == Func.POWER && tau < powDown) {
+				tau = powDown + (powUp - powDown) * ThreadLocalRandom.current().nextDouble();
+			} else if (pdfS == Func.EXPONENTIAL && tau < expDown) {
+				tau = expDown + (expUp - expDown) * ThreadLocalRandom.current().nextDouble();
+			} else if (pdfS == Func.GAMMA && tau < gammaDown) {
+				tau = gammaDown + (gammaUp - gammaDown) * ThreadLocalRandom.current().nextDouble();
+			}
+			
+			double change_pdf_percentage_limit = 5; // necessary calculate this limits, depends on the current iterations
+			if (paramInfo.gain() <= change_pdf_percentage_limit) {
+				Func new_pdfS;
+				do {
+					new_pdfS = randomFunc.random();
+				} while (new_pdfS == pdfS);
+				pdfS = new_pdfS;
+			}
+		
+    	}else {
+    		//necessary create new parameters or continue with the same
+    	}
+    	        
+        
+        LOGGER.log(Level.INFO, "pdf: "+pdfS.toString()+" tau: "+tau);
+        
+        initPDF(pdfS);
+    	
     }
 }
