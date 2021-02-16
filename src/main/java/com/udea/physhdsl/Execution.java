@@ -106,6 +106,7 @@ public class Execution {
     		}
     		
     		bestWorker = teams.get(bestTIndex).getBestWorkerStats();
+    		bestWorker.setTId(bestTIndex);
         
     		double endTime = System.nanoTime();
     		double time = (endTime-initialTime)/1e9;

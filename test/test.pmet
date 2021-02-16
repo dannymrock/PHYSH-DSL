@@ -2,7 +2,7 @@ Config {
     size: 40
     model: QAP
     target: 3139370
-    maxTime: 300000
+    maxTime: 10000
     updatePoolI: 25000
     requestPoolI: 50000
     autoParam: 10000 
@@ -12,8 +12,8 @@ Config {
 	filePath: /Users/dannymunera/Documents/repos/degree-work/tai40a.qap
 	sampleSize: 10
 	errorRange: 1
-	RoTS.tabuDurationFactor: -1.0
-	RoTS.aspirationFactor: -1.0
+	RoTS.tabuDurationFactor: -1
+	RoTS.aspirationFactor: -1
 	EO.tau: -1.0
 }
 

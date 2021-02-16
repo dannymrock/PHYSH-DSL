@@ -103,7 +103,7 @@ public class EOSearch extends Metaheuristic{
         valOrNull = configuration.get("EO.pdf");
         pdfUserSel = valOrNull == null ? -1 : Integer.parseInt((String) valOrNull);
         selSecond = 1; //opts("-EO_ss", 1);
-        LOGGER.log(Level.INFO, "tausel: "+tauUserSel+" pdf sel: "+pdfUserSel);
+        LOGGER.log(Level.INFO, "tau: "+tauUserSel+" -  pdf: "+pdfUserSel);
     }
 
     /**
