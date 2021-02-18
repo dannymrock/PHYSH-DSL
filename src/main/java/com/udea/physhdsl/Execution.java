@@ -142,6 +142,9 @@ public class Execution {
     			teams.get(i).reinitialize();
     		}
     		kill.set(false);
+    		
+    		teams.get(bestTIndex).teamParams.printBestStats(bestWorker.getMhtype());
+    		
     	}
     	printAVGs(bestWorker.getTarget(), createFile);
     	if (createFile) {

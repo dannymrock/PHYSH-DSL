@@ -1,6 +1,8 @@
 package com.udea.physhdsl.solver;
 
 import com.udea.physhdsl.ParamInformation;
+import com.udea.physhdsl.adaptpso.EOParams;
+import com.udea.physhdsl.adaptpso.TeamParams;
 import com.udea.physhdsl.model.QAPModel;
 
 import java.util.Arrays;
@@ -81,6 +83,18 @@ public class EOSearch extends Metaheuristic{
     private double powUp;
     private double gammaDown;
     private double gammaUp;
+    
+    // PSO-adapt
+    private EOParams pBest;
+    private EOParams pCurrent;
+    
+    private double tauV;
+    //PSO params
+	double c1 = 2.0, c2 = 2.0;
+	//double tetha = c1+c2;
+	double w = 0.9;
+	//double chi = 2*(0.5)/Math.abs(2-tetha-Math.sqrt(tetha*tetha-4*tetha));
+	int psoIters;
 
     public EOSearch (int size){
         super(size);
@@ -93,15 +107,19 @@ public class EOSearch extends Metaheuristic{
         fit = new int[problemModel.getSize()];
         expDown = 6.385378048 * Math.pow(problemModel.getSize(), -1.033400799);
         expUp = 8.867754442 * Math.pow(problemModel.getSize(), -0.895936426);
-        powDown = 1.575467001 * Math.pow(problemModel.getSize(), -0.1448643794);
-        powUp = 2.426369897 * Math.pow(problemModel.getSize(), -0.1435045369);
+        //powDown = 1.575467001 * Math.pow(problemModel.getSize(), -0.1448643794);
+        //powUp = 2.426369897 * Math.pow(problemModel.getSize(), -0.1435045369);
+        powDown = 0.2;
+        powUp = 2;
+        
+        
         gammaDown = 1.575467001 * Math.pow(problemModel.getSize(), -0.1448643794);
         gammaUp = 2.426369897 * Math.pow(problemModel.getSize(), -0.1435045369);
         
         Object valOrNull = configuration.get("EO.tau");
         tauUserSel = valOrNull == null ? (1.0 + 1.0 / Math.log(problemModel.getSize())) : Double.parseDouble((String) valOrNull);
         valOrNull = configuration.get("EO.pdf");
-        pdfUserSel = valOrNull == null ? -1 : Integer.parseInt((String) valOrNull);
+        pdfUserSel = valOrNull == null ? -1 : (int) valOrNull;
         selSecond = 1; //opts("-EO_ss", 1);
         LOGGER.log(Level.INFO, "tau: "+tauUserSel+" -  pdf: "+pdfUserSel);
     }
@@ -139,6 +157,11 @@ public class EOSearch extends Metaheuristic{
         
         
         LOGGER.log(Level.INFO, "pdf: "+pdfS.toString()+" tau: "+tau);
+        
+        tauV = 0;
+        psoIters = 0;
+        pCurrent = new EOParams(tau, pdfS.getValue(), -1);
+        pBest = new EOParams(tau, pdfS.getValue(), -1);
         
         initPDF(pdfS);
     }
@@ -406,4 +429,51 @@ public class EOSearch extends Metaheuristic{
         initPDF(pdfS);
     	
     }
+    
+    public void adaptParametersPSO(ParamInformation paramInfo, TeamParams tRef) {
+    	
+    	LOGGER.log(Level.INFO, "******************** Adapting parameters PSO EO");
+    	
+    	pCurrent.setGain(paramInfo.gain());
+    	
+    	if(pCurrent.getGain() > pBest.getGain()) {
+    		// new best particle params
+    		pBest = new EOParams(pCurrent.getTau(), pCurrent.getPdf(), pCurrent.getGain());
+    	}
+    	
+    	EOParams gBest = tRef.updateGlobalEOParams(pCurrent);
+    	
+    	
+    	LOGGER.log(Level.INFO, "*** PSO EO: tauV: "+tauV+" old tau:"+ pCurrent.getTau()+" best particle" + pBest.getTau()+" best global "+gBest.getTau());
+    	
+    	
+    	// compute new velocity
+    	double pVelocityTau = c1 * ThreadLocalRandom.current().nextDouble() * (pBest.getTau() - pCurrent.getTau());
+    	double gVelocityTau = c2 * ThreadLocalRandom.current().nextDouble() * (gBest.getTau() - pCurrent.getTau());
+    	
+    	// TODO: implement adaption in pdf selection
+    	    	
+    	// new current
+    	tauV = (w * tauV) + pVelocityTau + gVelocityTau;
+    	//tauV = chi * (tauV + pVelocityTau + gVelocityTau);
+    	
+    	
+    	tau = tau + tauV;
+    	
+    	if (tau < powDown) tau = powDown;
+    	if (tau > powUp) tau = powUp; 	
+    	
+    	LOGGER.log(Level.INFO, "******************** PSO EO: old tau:"+ pCurrent.getTau()+" new tau " + tau);
+
+    	pCurrent = new EOParams(tau, pdfS.getValue(), -1); 
+    	initPDF(pdfS);   
+    	
+    	psoIters++;
+    	if(psoIters % 10 == 0) {
+    		//delete memory each 10 iterations
+    		pBest = new EOParams(-1, -1, -1);
+    	}
+    	
+    	
+	}
 }

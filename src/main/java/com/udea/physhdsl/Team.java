@@ -1,5 +1,7 @@
 package com.udea.physhdsl;
 
+import com.udea.physhdsl.adaptpso.RoTParams;
+import com.udea.physhdsl.adaptpso.TeamParams;
 import com.udea.physhdsl.model.QAPModel;
 import com.udea.physhdsl.solver.Metaheuristic;
 
@@ -24,6 +26,8 @@ public class Team extends RecursiveAction{
 	private AtomicBoolean kill;
 	
 	private SolverStats bestWorkerStats;
+	
+	public TeamParams teamParams;
     
 	
 	public SolverStats getBestWorkerStats() {
@@ -69,13 +73,17 @@ public class Team extends RecursiveAction{
         boolean strictLow = false;
         int nProc = Runtime.getRuntime().availableProcessors();
         
+        
+        // Shared object for Team Parameters
+        teamParams = new TeamParams();
+        
         //ExecutorService EXEC = Executors.newCachedThreadPool();
         
         ForkJoinPool myPool = new ForkJoinPool(nProc);
         //AtomicBoolean kill = new AtomicBoolean(false);
 
         for (int i = 0; i < workers.size(); i++) {        
-        	workers.get(i).setWorker((id*100)+i, new QAPModel(myModel), pools, configuration, kill, targetCost, strictLow);
+        	workers.get(i).setWorker((id*100)+i, new QAPModel(myModel), pools, configuration, kill, targetCost, strictLow, teamParams);
             myPool.submit(workers.get(i));
             //workers.get(i).compute();
             //w.fork();
@@ -104,6 +112,7 @@ public class Team extends RecursiveAction{
         		"Best worker of TEAM "+id+" is  workerID: "+bestWorkerStats.getWId()
         		+"-"+bestWorkerStats.getMhtype() +" BestCost: "	
         				+bestWorkerStats.getBestCost());
+        
 	}
 
 	@Override

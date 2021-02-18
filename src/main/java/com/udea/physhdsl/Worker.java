@@ -1,5 +1,6 @@
 package com.udea.physhdsl;
 
+import com.udea.physhdsl.adaptpso.TeamParams;
 import com.udea.physhdsl.model.QAPModel;
 import com.udea.physhdsl.solver.Metaheuristic;
 
@@ -62,6 +63,9 @@ public class Worker extends RecursiveAction {
     
     private boolean autoParam;
     private int paramI;
+    private TeamParams tRef;
+    
+    
     
     public int getnChange() {
         return nChange;
@@ -120,7 +124,7 @@ public class Worker extends RecursiveAction {
     	this.size = size;
     }
     
-    public void setWorker(int i, QAPModel model, List<Pool> pools, Map<String, Object> configuration, AtomicBoolean kill, int tCost, boolean sLow){
+    public void setWorker(int i, QAPModel model, List<Pool> pools, Map<String, Object> configuration, AtomicBoolean kill, int tCost, boolean sLow, TeamParams tRef){
         setId(i);
         setPools(pools, configuration);
         setSize((int)configuration.get("size"));
@@ -149,6 +153,8 @@ public class Worker extends RecursiveAction {
     	this.kill = kill;
     	target = tCost;
     	strictLow = sLow;
+    	
+    	this.tRef = tRef;
     }
     
     /**
@@ -290,7 +296,7 @@ public class Worker extends RecursiveAction {
             //	this.heuristicSolver.displayInfo();
             //}
             interact();
-            if(autoParam) {
+            if(autoParam && nIter % paramI == 0){
             	adaptParameters();
             }
              
@@ -376,10 +382,7 @@ public class Worker extends RecursiveAction {
             // TODO: change I've not been able to improve in a while}
          
             if(autoParam) {
-            	// Adapt Parameters
-            	double currentTimems = (System.nanoTime() - initialTime)/1e6;
-            	metaheuristic.adaptParameters(paramInfo, paramInfo.getCurrentDivLimit(currentTimems));
-            	paramInfo.setNewInitial(currentCost, metaheuristic.variables);
+            	adaptParameters();
             }         
         }
     }
@@ -393,12 +396,11 @@ public class Worker extends RecursiveAction {
     }
     
     public void adaptParameters() {
-    	if(nIter % paramI == 0){
-    		// Adapt Parameters
-    		double currentTimems = (System.nanoTime() - initialTime)/1e6; 
-        	metaheuristic.adaptParameters(paramInfo, paramInfo.getCurrentDivLimit(currentTimems));
-        	paramInfo.setNewInitial(currentCost, metaheuristic.variables);
-    	}
+    	//double currentTimems = (System.nanoTime() - initialTime)/1e6; 
+        //metaheuristic.adaptParameters(paramInfo, paramInfo.getCurrentDivLimit(currentTimems));
+    	
+    	metaheuristic.adaptParametersPSO(paramInfo, tRef);
+        paramInfo.setNewInitial(currentCost, metaheuristic.variables);
     }
     
 }

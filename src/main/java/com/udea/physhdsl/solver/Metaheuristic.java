@@ -1,6 +1,7 @@
 package com.udea.physhdsl.solver;
 
 import com.udea.physhdsl.ParamInformation;
+import com.udea.physhdsl.adaptpso.TeamParams;
 import com.udea.physhdsl.model.QAPModel;
 
 import java.util.HashMap;
@@ -248,6 +249,11 @@ public class Metaheuristic {
     public void adaptParameters(ParamInformation paramInfo, double divPercentageLimit) {
     	LOGGER.log(Level.WARNING, "must be overwritten by each descendant");
     }
+
+
+	public void adaptParametersPSO(ParamInformation paramInfo, TeamParams tRef) {
+		LOGGER.log(Level.WARNING, "must be overwritten by each descendant");		
+	}
 
 }
 

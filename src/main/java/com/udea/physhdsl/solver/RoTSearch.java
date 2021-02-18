@@ -1,6 +1,8 @@
 package com.udea.physhdsl.solver;
 
 import com.udea.physhdsl.ParamInformation;
+import com.udea.physhdsl.adaptpso.RoTParams;
+import com.udea.physhdsl.adaptpso.TeamParams;
 import com.udea.physhdsl.model.QAPModel;
 
 import java.util.Arrays;
@@ -31,14 +33,21 @@ public class RoTSearch extends Metaheuristic{
     //private double tdu = 1.8;
     
     private double tdl = 0.2;
-    private double tdu = 1.8;
+    private double tdu = 3.0;
 
     private double al = 2.0;
     private double au = 5.0;
+    
+    
+    // PSO-adapt
+    private RoTParams pBest;
+    private RoTParams pCurrent;
+    
 
     public RoTSearch(int size){
         super(size);
         mySolverType = Type.ROT;
+        pBest = new RoTParams(-1, -1, -1);
     }
 
     public void configHeuristic(QAPModel problemModel, Map<String, Object> configuration){
@@ -72,16 +81,23 @@ public class RoTSearch extends Metaheuristic{
             tabuDurationFactor = tabuDurationFactorUS;
         }
         //Console.OUT.println("this.tabuDurationFactor: " + this.tabuDurationFactor);
-        tabuDuration = (int)(tabuDurationFactor * problemModel.getSize());
-        LOGGER.log(Level.INFO, "tabuDuration Factor: "+tabuDurationFactor+" tabuDuration: " + tabuDuration);
+        //tabuDuration = (int)(tabuDurationFactor * problemModel.getSize());
         
         if (aspirationFactorUS == -1.0)
             aspirationFactor = al + (au - al) * ThreadLocalRandom.current().nextDouble();
         else
             aspirationFactor = aspirationFactorUS;
+        //aspiration = (int) (aspirationFactor * problemModel.getSize() * problemModel.getSize());
+        
+        pCurrent = new RoTParams(tabuDurationFactor, aspirationFactor, -1);
+        pBest = new RoTParams(tabuDurationFactor, aspirationFactor, -1);
+        
+        setParams(pCurrent);
+        LOGGER.log(Level.INFO, "tabuDuration Factor: "+tabuDurationFactor+" tabuDuration: " + tabuDuration);
         LOGGER.log(Level.INFO, "aspirationFactor: " + this.aspirationFactor);
-
-        aspiration = (int) (aspirationFactor * problemModel.getSize() * problemModel.getSize());
+        
+        
+        
         for (int i = 0 ; i < problemModel.getSize(); i++){
             for (int j = 0 ; j < problemModel.getSize(); j++){
                 this.tabuList[i][j] = -(problemModel.getSize() * i + j);
@@ -297,4 +313,54 @@ public class RoTSearch extends Metaheuristic{
     	}
     	
     }
+    
+    
+    public void adaptParametersPSO(ParamInformation paramInfo, TeamParams tRef) {    	
+    	LOGGER.log(Level.INFO, "-------------------- Adapting parameters PSO RoT");
+
+    	
+    	pCurrent.setGain(paramInfo.gain());
+    	
+    	if(pCurrent.getGain() > pBest.getGain()) {
+    		// new best particle params
+    		pBest = new RoTParams(pCurrent.getTabuDurationFactor(), pCurrent.getAspirationFactor(), pCurrent.getGain());
+    	}
+    	
+    	RoTParams gBest = tRef.updateGlobalRoTParams(pCurrent);
+    	
+    	//PSO params
+    	double c1 = 2.0, c2 = 2.0;
+    	double w = 0.8;
+    	// compute new velocity
+    	double pVelocityTD = c1 * ThreadLocalRandom.current().nextDouble() * (pBest.getTabuDurationFactor() - pCurrent.getTabuDurationFactor());
+    	double pVelocityAF = c1 * ThreadLocalRandom.current().nextDouble() * (pBest.getAspirationFactor() - pCurrent.getAspirationFactor());
+    	double gVelocityTD = c2 * ThreadLocalRandom.current().nextDouble() * (gBest.getTabuDurationFactor() - pCurrent.getTabuDurationFactor());
+    	double gVelocityAF = c2 * ThreadLocalRandom.current().nextDouble() * (gBest.getAspirationFactor() - pCurrent.getAspirationFactor());
+    	
+    	// new current
+    	double TDV = w * pCurrent.getTabuDurationFactor() + pVelocityTD + gVelocityTD;
+    	double AFV = w * pCurrent.getAspirationFactor() + pVelocityAF + gVelocityAF;
+    	
+    	double newTD = pCurrent.getTabuDurationFactor() + TDV;
+    	double newAF = pCurrent.getAspirationFactor() + AFV;
+    	
+    	if(newTD < tdl) newTD = tdl;
+    	if(newTD > tdu) newTD = tdu;
+    	if(newAF < al) newAF = al;
+    	if(newAF > au) newAF = au;
+    	
+    	
+    	LOGGER.log(Level.INFO, "-------------------- PSO RoT: old td:"+ pCurrent.getTabuDurationFactor()+" new td " + newTD);
+    	LOGGER.log(Level.INFO, "-------------------- PSO RoT: old af:"+ pCurrent.getAspirationFactor()+" new af " + newAF);
+    	
+    	pCurrent = new RoTParams(newTD, newAF, -1);
+    	setParams(pCurrent);
+    	
+    }
+    
+    public void setParams(RoTParams params) {
+    	tabuDuration = (int)(params.getTabuDurationFactor() * problemModel.getSize());
+    	aspiration = (int) (params.getAspirationFactor() * problemModel.getSize() * problemModel.getSize());
+    }
+    
 }
