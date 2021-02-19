@@ -16,13 +16,14 @@ Config {
 	RoTS.aspirationFactor: -1
 	EO.tau: -1
 	EO.pdf: 1
+	Adapt.delMem: 10
 }
 
 Execution {
 	Team <1>{
 		
 		Worker <8> {
-			MH: Extremal
+			MH: RoT
 			updatePool: 1
 			requestPool: 1
 		}

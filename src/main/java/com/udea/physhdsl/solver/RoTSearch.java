@@ -42,7 +42,15 @@ public class RoTSearch extends Metaheuristic{
     // PSO-adapt
     private RoTParams pBest;
     private RoTParams pCurrent;
+    // PSO-velocities
+    private double TDV;
+    private double AFV;
+    //PSO params
+	private double c1 = 2.0, c2 = 2.0;
+	private double w = 0.8;
     
+	private int psoIters;
+	private int psoDelMem;
 
     public RoTSearch(int size){
         super(size);
@@ -59,6 +67,10 @@ public class RoTSearch extends Metaheuristic{
         tabuDurationFactorUS = valOrNull == null ? 8 : Double.parseDouble((String) valOrNull);
         valOrNull = configuration.get("RoTS.aspirationFactor");
         aspirationFactorUS = valOrNull == null ? 5 : Double.parseDouble((String) valOrNull);
+        
+        valOrNull = configuration.get("Adapt.delMem");
+        psoDelMem = valOrNull == null ? Integer.MAX_VALUE : (int) valOrNull;
+        
     }
 
     //private int tabuDurationLower;
@@ -91,6 +103,11 @@ public class RoTSearch extends Metaheuristic{
         
         pCurrent = new RoTParams(tabuDurationFactor, aspirationFactor, -1);
         pBest = new RoTParams(tabuDurationFactor, aspirationFactor, -1);
+        
+        
+        AFV = 0;
+        TDV = 0;
+        psoIters = 0;
         
         setParams(pCurrent);
         LOGGER.log(Level.INFO, "tabuDuration Factor: "+tabuDurationFactor+" tabuDuration: " + tabuDuration);
@@ -328,9 +345,7 @@ public class RoTSearch extends Metaheuristic{
     	
     	RoTParams gBest = tRef.updateGlobalRoTParams(pCurrent);
     	
-    	//PSO params
-    	double c1 = 2.0, c2 = 2.0;
-    	double w = 0.8;
+    	
     	// compute new velocity
     	double pVelocityTD = c1 * ThreadLocalRandom.current().nextDouble() * (pBest.getTabuDurationFactor() - pCurrent.getTabuDurationFactor());
     	double pVelocityAF = c1 * ThreadLocalRandom.current().nextDouble() * (pBest.getAspirationFactor() - pCurrent.getAspirationFactor());
@@ -338,8 +353,8 @@ public class RoTSearch extends Metaheuristic{
     	double gVelocityAF = c2 * ThreadLocalRandom.current().nextDouble() * (gBest.getAspirationFactor() - pCurrent.getAspirationFactor());
     	
     	// new current
-    	double TDV = w * pCurrent.getTabuDurationFactor() + pVelocityTD + gVelocityTD;
-    	double AFV = w * pCurrent.getAspirationFactor() + pVelocityAF + gVelocityAF;
+    	TDV = (w * TDV) + pVelocityTD + gVelocityTD;
+    	AFV = (w * AFV) + pVelocityAF + gVelocityAF;
     	
     	double newTD = pCurrent.getTabuDurationFactor() + TDV;
     	double newAF = pCurrent.getAspirationFactor() + AFV;
@@ -355,6 +370,14 @@ public class RoTSearch extends Metaheuristic{
     	
     	pCurrent = new RoTParams(newTD, newAF, -1);
     	setParams(pCurrent);
+    	
+    	
+    	psoIters++;
+    	if(psoIters % psoDelMem == 0) {
+    		//delete memory
+    		pBest = new RoTParams(-1, -1, -1);
+    	}
+    	
     	
     }
     

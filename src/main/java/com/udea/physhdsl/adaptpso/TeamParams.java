@@ -16,17 +16,26 @@ public class TeamParams {
 	private List<EOParams> bestEOParamList;
 	
 	private int globalReports;
+	private int psoDelMem;
 	
-	public TeamParams() {
+	public TeamParams(int psoDelMemGlobal) {
 		super();
 		bestRoTParams = new RoTParams(-1, -1, -1); 
 		bestEOParams = new EOParams(-1, -1, -1);
 		bestRoTParamList = new ArrayList<RoTParams>();
 		bestEOParamList = new ArrayList<EOParams>();
 		globalReports = 0;
+		psoDelMem = psoDelMemGlobal;
 	}
 	
 	public synchronized RoTParams updateGlobalRoTParams(RoTParams pParams) {
+		globalReports++;
+		if(globalReports % 40 == 0) {
+			bestRoTParams = new RoTParams(-1, -1, -1);
+			LOGGER.log(Level.INFO, "/////////////////////////////////////////Delete global memory");
+		}
+		
+		
 		if (pParams.getGain() > bestRoTParams.getGain()) {
 			LOGGER.log(Level.INFO, "New RoTs parameters in TEAM");
 			bestRoTParams.setTabuDurationFactor(pParams.getTabuDurationFactor());

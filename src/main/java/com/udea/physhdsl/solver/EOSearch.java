@@ -90,11 +90,13 @@ public class EOSearch extends Metaheuristic{
     
     private double tauV;
     //PSO params
-	double c1 = 2.0, c2 = 2.0;
+	private double c1 = 2.0, c2 = 2.0;
 	//double tetha = c1+c2;
-	double w = 0.9;
+	private double w = 0.9;
 	//double chi = 2*(0.5)/Math.abs(2-tetha-Math.sqrt(tetha*tetha-4*tetha));
-	int psoIters;
+	private int psoIters;
+	private int psoDelMem;
+	
 
     public EOSearch (int size){
         super(size);
@@ -122,6 +124,11 @@ public class EOSearch extends Metaheuristic{
         pdfUserSel = valOrNull == null ? -1 : (int) valOrNull;
         selSecond = 1; //opts("-EO_ss", 1);
         LOGGER.log(Level.INFO, "tau: "+tauUserSel+" -  pdf: "+pdfUserSel);
+        
+        valOrNull = configuration.get("Adapt.delMem");
+        psoDelMem = valOrNull == null ? Integer.MAX_VALUE : (int) valOrNull;
+        
+        
     }
 
     /**
@@ -469,8 +476,8 @@ public class EOSearch extends Metaheuristic{
     	initPDF(pdfS);   
     	
     	psoIters++;
-    	if(psoIters % 10 == 0) {
-    		//delete memory each 10 iterations
+    	if(psoIters % psoDelMem == 0) {
+    		//delete memory
     		pBest = new EOParams(-1, -1, -1);
     	}
     	
