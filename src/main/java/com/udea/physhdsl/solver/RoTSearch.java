@@ -69,7 +69,7 @@ public class RoTSearch extends Metaheuristic{
         aspirationFactorUS = valOrNull == null ? 5 : Double.parseDouble((String) valOrNull);
         
         valOrNull = configuration.get("Adapt.delMem");
-        psoDelMem = valOrNull == null ? Integer.MAX_VALUE : (int) valOrNull;
+        psoDelMem = valOrNull == null ? -1 : (int) valOrNull;
         
     }
 
@@ -373,7 +373,7 @@ public class RoTSearch extends Metaheuristic{
     	
     	
     	psoIters++;
-    	if(psoIters % psoDelMem == 0) {
+    	if(psoDelMem > 0 && psoIters % psoDelMem == 0) {
     		//delete memory
     		pBest = new RoTParams(-1, -1, -1);
     	}

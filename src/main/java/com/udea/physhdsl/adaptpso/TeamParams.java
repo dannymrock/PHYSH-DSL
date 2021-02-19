@@ -30,7 +30,7 @@ public class TeamParams {
 	
 	public synchronized RoTParams updateGlobalRoTParams(RoTParams pParams) {
 		globalReports++;
-		if(globalReports % psoDelMem == 0) {
+		if(psoDelMem > 0 && globalReports % psoDelMem == 0) {
 			bestRoTParams = new RoTParams(-1, -1, -1);
 			LOGGER.log(Level.INFO, "/////////////////////////////////////////Delete global memory");
 		}
@@ -50,7 +50,7 @@ public class TeamParams {
 	
 	public synchronized EOParams updateGlobalEOParams(EOParams pParams) {
 		globalReports++;
-		if(globalReports % psoDelMem == 0) {
+		if(psoDelMem > 0 && globalReports % psoDelMem == 0) {
 			bestEOParams = new EOParams(-1, -1, -1);
 			LOGGER.log(Level.INFO, "/////////////////////////////////////////Delete global memory");
 		}

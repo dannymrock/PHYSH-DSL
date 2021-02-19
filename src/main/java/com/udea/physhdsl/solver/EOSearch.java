@@ -126,7 +126,7 @@ public class EOSearch extends Metaheuristic{
         LOGGER.log(Level.INFO, "tau: "+tauUserSel+" -  pdf: "+pdfUserSel);
         
         valOrNull = configuration.get("Adapt.delMem");
-        psoDelMem = valOrNull == null ? Integer.MAX_VALUE : (int) valOrNull;
+        psoDelMem = valOrNull == null ? -1 : (int) valOrNull;
         
         
     }
@@ -476,7 +476,7 @@ public class EOSearch extends Metaheuristic{
     	initPDF(pdfS);   
     	
     	psoIters++;
-    	if(psoIters % psoDelMem == 0) {
+    	if(psoDelMem > 0 && psoIters % psoDelMem == 0) {
     		//delete memory
     		pBest = new EOParams(-1, -1, -1);
     	}

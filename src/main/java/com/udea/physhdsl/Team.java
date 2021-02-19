@@ -76,7 +76,7 @@ public class Team extends RecursiveAction{
         
         // get parameter for deleting global memeory
         Object valOrNull = configuration.get("Adapt.delMem");
-        int psoDelMem = valOrNull == null ? Integer.MAX_VALUE : (int) valOrNull;
+        int psoDelMem = valOrNull == null ? -1 : (int) valOrNull;
         
         // Shared object for Team Parameters
         teamParams = new TeamParams(psoDelMem * workers.size());
