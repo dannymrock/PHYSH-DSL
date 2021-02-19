@@ -51,6 +51,7 @@ public class RoTSearch extends Metaheuristic{
     
 	private int psoIters;
 	private int psoDelMem;
+	private int psoNoImprovement;
 
     public RoTSearch(int size){
         super(size);
@@ -340,7 +341,10 @@ public class RoTSearch extends Metaheuristic{
     	
     	if(pCurrent.getGain() > pBest.getGain()) {
     		// new best particle params
+    		psoNoImprovement = 1;
     		pBest = new RoTParams(pCurrent.getTabuDurationFactor(), pCurrent.getAspirationFactor(), pCurrent.getGain());
+    	}else { 
+    		psoNoImprovement++;
     	}
     	
     	RoTParams gBest = tRef.updateGlobalRoTParams(pCurrent);
@@ -373,8 +377,10 @@ public class RoTSearch extends Metaheuristic{
     	
     	
     	psoIters++;
-    	if(psoDelMem > 0 && psoIters % psoDelMem == 0) {
+    	//if(psoDelMem > 0 && psoIters % psoDelMem == 0) {
+    	if(psoDelMem > 0 && psoNoImprovement % psoDelMem == 0) {
     		//delete memory
+    		psoNoImprovement = 0;
     		pBest = new RoTParams(-1, -1, -1);
     	}
     	

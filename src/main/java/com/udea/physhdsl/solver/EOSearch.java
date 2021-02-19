@@ -96,6 +96,7 @@ public class EOSearch extends Metaheuristic{
 	//double chi = 2*(0.5)/Math.abs(2-tetha-Math.sqrt(tetha*tetha-4*tetha));
 	private int psoIters;
 	private int psoDelMem;
+	private int psoNoImprovement;
 	
 
     public EOSearch (int size){
@@ -167,6 +168,7 @@ public class EOSearch extends Metaheuristic{
         
         tauV = 0;
         psoIters = 0;
+        psoNoImprovement = 0;
         pCurrent = new EOParams(tau, pdfS.getValue(), -1);
         pBest = new EOParams(tau, pdfS.getValue(), -1);
         
@@ -445,7 +447,10 @@ public class EOSearch extends Metaheuristic{
     	
     	if(pCurrent.getGain() > pBest.getGain()) {
     		// new best particle params
+    		psoNoImprovement = 1;
     		pBest = new EOParams(pCurrent.getTau(), pCurrent.getPdf(), pCurrent.getGain());
+    	}else { 
+    		psoNoImprovement++;
     	}
     	
     	EOParams gBest = tRef.updateGlobalEOParams(pCurrent);
@@ -476,11 +481,11 @@ public class EOSearch extends Metaheuristic{
     	initPDF(pdfS);   
     	
     	psoIters++;
-    	if(psoDelMem > 0 && psoIters % psoDelMem == 0) {
+    	//if(psoDelMem > 0 && psoIters % psoDelMem == 0) {
+    	if(psoDelMem > 0 && psoNoImprovement % psoDelMem == 0) {
     		//delete memory
+    		psoNoImprovement = 0;
     		pBest = new EOParams(-1, -1, -1);
     	}
-    	
-    	
 	}
 }

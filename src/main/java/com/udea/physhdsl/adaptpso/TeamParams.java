@@ -18,6 +18,9 @@ public class TeamParams {
 	private int globalReports;
 	private int psoDelMem;
 	
+	private int rotNoImprovement;
+	private int eoNoImprovement;
+	
 	public TeamParams(int psoDelMemGlobal) {
 		super();
 		bestRoTParams = new RoTParams(-1, -1, -1); 
@@ -26,13 +29,17 @@ public class TeamParams {
 		bestEOParamList = new ArrayList<EOParams>();
 		globalReports = 0;
 		psoDelMem = psoDelMemGlobal;
+		rotNoImprovement = 1;
+		eoNoImprovement = 0;
 	}
 	
 	public synchronized RoTParams updateGlobalRoTParams(RoTParams pParams) {
 		globalReports++;
-		if(psoDelMem > 0 && globalReports % psoDelMem == 0) {
+		//if(psoDelMem > 0 && globalReports % psoDelMem == 0) {
+		if(psoDelMem > 0 && rotNoImprovement % psoDelMem == 0) {
 			bestRoTParams = new RoTParams(-1, -1, -1);
-			LOGGER.log(Level.INFO, "/////////////////////////////////////////Delete global memory");
+			LOGGER.log(Level.INFO, "------------------------------------------Delete global memory "+rotNoImprovement);
+			rotNoImprovement = 0;
 		}
 		
 		
@@ -42,17 +49,21 @@ public class TeamParams {
 			bestRoTParams.setAspirationFactor(pParams.getAspirationFactor());
 			bestRoTParams.setGain(pParams.getGain());;
 			bestRoTParamList.add(new RoTParams(pParams));
+			rotNoImprovement = 1;
 			return pParams;
 		} else {
+			rotNoImprovement++;
 			return new RoTParams(bestRoTParams);
 		}
 	}
 	
 	public synchronized EOParams updateGlobalEOParams(EOParams pParams) {
 		globalReports++;
-		if(psoDelMem > 0 && globalReports % psoDelMem == 0) {
+		//if(psoDelMem > 0 && globalReports % psoDelMem == 0) {
+		if(psoDelMem > 0 && eoNoImprovement % psoDelMem == 0) {
+			eoNoImprovement = 0;
 			bestEOParams = new EOParams(-1, -1, -1);
-			LOGGER.log(Level.INFO, "/////////////////////////////////////////Delete global memory");
+			LOGGER.log(Level.INFO, "********************************************Delete global memory");
 		}
 		
 		if (pParams.getGain() > bestEOParams.getGain()) {
@@ -61,8 +72,10 @@ public class TeamParams {
 			bestEOParams.setPdf(pParams.getPdf());
 			bestEOParams.setGain(pParams.getGain());
 			bestEOParamList.add(new EOParams(pParams));
+			eoNoImprovement = 1;
 			return pParams;
 		} else {
+			eoNoImprovement++;
 			return new EOParams(bestEOParams);
 		}
 	}
