@@ -2,11 +2,14 @@ package com.udea.physhdsl.solver;
 
 import com.udea.physhdsl.ParamInformation;
 import com.udea.physhdsl.adaptpso.EOParams;
+import com.udea.physhdsl.adaptpso.RoTParams;
 import com.udea.physhdsl.adaptpso.TeamParams;
 import com.udea.physhdsl.model.QAPModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
@@ -98,6 +101,10 @@ public class EOSearch extends Metaheuristic{
 	private int psoDelMem;
 	private int psoNoImprovement;
 	
+	private List<EOParams> paramHisto;
+	
+	private long iniTime;
+	
 
     public EOSearch (int size){
         super(size);
@@ -129,6 +136,9 @@ public class EOSearch extends Metaheuristic{
         valOrNull = configuration.get("Adapt.delMem");
         psoDelMem = valOrNull == null ? -1 : (int) valOrNull;
         
+        
+        paramHisto = new ArrayList<EOParams>();
+        iniTime = System.nanoTime();
         
     }
 
@@ -176,6 +186,10 @@ public class EOSearch extends Metaheuristic{
     }
 
     private void initPDF(Func func){
+    	
+    	double time = (System.nanoTime() - iniTime)/1e9;
+    	paramHisto.add(new EOParams(pCurrent, time));
+    	
         double sum = 0.0;
         double  y = 0.0;
 
@@ -449,6 +463,7 @@ public class EOSearch extends Metaheuristic{
     		// new best particle params
     		psoNoImprovement = 1;
     		pBest = new EOParams(pCurrent.getTau(), pCurrent.getPdf(), pCurrent.getGain());
+    		LOGGER.log(Level.INFO, "-------------------- Delete local mem in particle RoT");
     	}else { 
     		psoNoImprovement++;
     	}
@@ -488,4 +503,12 @@ public class EOSearch extends Metaheuristic{
     		pBest = new EOParams(-1, -1, -1);
     	}
 	}
+    
+    
+    public void printParams() {
+    	System.out.println("EO particle params");
+		for(EOParams p : paramHisto) {
+			System.out.printf("%5.1f, %5.4f, %2d, %5.4f\n", p.getTime(), p.getTau(), p.getPdf(), p.getGain());
+		}
+    }
 }

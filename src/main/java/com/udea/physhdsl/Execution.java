@@ -132,11 +132,16 @@ public class Execution {
     		
     		printSolution(createFile);
     		
+    		
     		model.verify(bestWorker.getBestConf().length, bestWorker.getBestConf());
     		LOGGER.log(Level.INFO,"\nExecution "+rep+": all teams have finished");
     		LOGGER.log(Level.INFO,"Best worker of whole execution is TeamID: "+ bestWorker.getTId()+" workerID: " 
     		+ bestWorker.getWId()+"-"+bestWorker.getMhtype()+" BestCost: "+bestWorker.getBestCost());
     		LOGGER.log(Level.INFO,"Execution time: "+time+" ms");
+    		
+    		teams.get(bestTIndex).getWorkers().get(bestWorker.getWId()).printParams();
+    		
+    		
     		for (int i = 0; i < teams.size(); i++)  {
     			teams.get(i).clean();
     			teams.get(i).reinitialize();

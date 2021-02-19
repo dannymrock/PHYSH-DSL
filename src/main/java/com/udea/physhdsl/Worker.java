@@ -403,4 +403,8 @@ public class Worker extends RecursiveAction {
         paramInfo.setNewInitial(currentCost, metaheuristic.variables);
     }
     
+    public void printParams() {
+    	metaheuristic.printParams();
+    }
+    
 }

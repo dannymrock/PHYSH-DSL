@@ -5,7 +5,9 @@ import com.udea.physhdsl.adaptpso.RoTParams;
 import com.udea.physhdsl.adaptpso.TeamParams;
 import com.udea.physhdsl.model.QAPModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
@@ -33,15 +35,16 @@ public class RoTSearch extends Metaheuristic{
     //private double tdu = 1.8;
     
     private double tdl = 0.2;
-    private double tdu = 3.0;
+    private double tdu = 20.0;
 
-    private double al = 2.0;
-    private double au = 5.0;
+    private double al = 0.0;
+    private double au = 10.0;
     
     
     // PSO-adapt
     private RoTParams pBest;
     private RoTParams pCurrent;
+    private List<RoTParams> paramHisto;
     // PSO-velocities
     private double TDV;
     private double AFV;
@@ -52,11 +55,13 @@ public class RoTSearch extends Metaheuristic{
 	private int psoIters;
 	private int psoDelMem;
 	private int psoNoImprovement;
+	
+	private long iniTime;
 
     public RoTSearch(int size){
         super(size);
         mySolverType = Type.ROT;
-        pBest = new RoTParams(-1, -1, -1);
+        
     }
 
     public void configHeuristic(QAPModel problemModel, Map<String, Object> configuration){
@@ -72,6 +77,9 @@ public class RoTSearch extends Metaheuristic{
         valOrNull = configuration.get("Adapt.delMem");
         psoDelMem = valOrNull == null ? -1 : (int) valOrNull;
         
+        pBest = new RoTParams(-1, -1, -1);
+        paramHisto = new ArrayList<RoTParams>();
+        iniTime =  System.nanoTime();
     }
 
     //private int tabuDurationLower;
@@ -343,6 +351,7 @@ public class RoTSearch extends Metaheuristic{
     		// new best particle params
     		psoNoImprovement = 1;
     		pBest = new RoTParams(pCurrent.getTabuDurationFactor(), pCurrent.getAspirationFactor(), pCurrent.getGain());
+    		LOGGER.log(Level.INFO, "-------------------- Delete local mem in particle RoT");
     	}else { 
     		psoNoImprovement++;
     	}
@@ -383,13 +392,22 @@ public class RoTSearch extends Metaheuristic{
     		psoNoImprovement = 0;
     		pBest = new RoTParams(-1, -1, -1);
     	}
-    	
-    	
     }
     
     public void setParams(RoTParams params) {
+    	
+    	double time = (System.nanoTime() - iniTime)/1e9;
+    	paramHisto.add(new RoTParams(params, time));
+    	
     	tabuDuration = (int)(params.getTabuDurationFactor() * problemModel.getSize());
     	aspiration = (int) (params.getAspirationFactor() * problemModel.getSize() * problemModel.getSize());
+    }
+    
+    public void printParams() {
+    	System.out.println("ROT particle params ");
+		for(RoTParams p : paramHisto) {
+			System.out.printf("%5.1f, %5.4f, %5.4f, %5.4f\n", p.getTime(), p.getTabuDurationFactor(), p.getAspirationFactor(), p.getGain());
+		}
     }
     
 }

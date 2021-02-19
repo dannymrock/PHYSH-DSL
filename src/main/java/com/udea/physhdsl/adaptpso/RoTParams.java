@@ -5,7 +5,12 @@ public class RoTParams {
 	private double tabuDurationFactor;
 	private double aspirationFactor;
 	private double gain;
+	private double time;
 	
+	public double getTime() {
+		return time;
+	}
+
 	public RoTParams(double tabuDurationFactor, double aspirationFactor, double gain) {
 		super();
 		this.tabuDurationFactor = tabuDurationFactor;
@@ -17,6 +22,13 @@ public class RoTParams {
 		this.tabuDurationFactor = p.getTabuDurationFactor();
 		this.aspirationFactor = p.getAspirationFactor();
 		this.gain = p.getGain();
+	}
+	
+	public RoTParams(RoTParams p, double time) {
+		this.tabuDurationFactor = p.getTabuDurationFactor();
+		this.aspirationFactor = p.getAspirationFactor();
+		this.gain = p.getGain();
+		this.time = time;
 	}
 	
 	public double getTabuDurationFactor() {

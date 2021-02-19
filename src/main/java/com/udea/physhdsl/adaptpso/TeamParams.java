@@ -20,6 +20,7 @@ public class TeamParams {
 	
 	private int rotNoImprovement;
 	private int eoNoImprovement;
+	private long initialTime;
 	
 	public TeamParams(int psoDelMemGlobal) {
 		super();
@@ -31,6 +32,7 @@ public class TeamParams {
 		psoDelMem = psoDelMemGlobal;
 		rotNoImprovement = 1;
 		eoNoImprovement = 0;
+		initialTime = System.nanoTime();
 	}
 	
 	public synchronized RoTParams updateGlobalRoTParams(RoTParams pParams) {
@@ -48,7 +50,8 @@ public class TeamParams {
 			bestRoTParams.setTabuDurationFactor(pParams.getTabuDurationFactor());
 			bestRoTParams.setAspirationFactor(pParams.getAspirationFactor());
 			bestRoTParams.setGain(pParams.getGain());;
-			bestRoTParamList.add(new RoTParams(pParams));
+			double time = (System.nanoTime()-initialTime)/1e9;
+			bestRoTParamList.add(new RoTParams(pParams, time));
 			rotNoImprovement = 1;
 			return pParams;
 		} else {
@@ -71,7 +74,8 @@ public class TeamParams {
 			bestEOParams.setTau(pParams.getTau());
 			bestEOParams.setPdf(pParams.getPdf());
 			bestEOParams.setGain(pParams.getGain());
-			bestEOParamList.add(new EOParams(pParams));
+			double time = (System.nanoTime()-initialTime)/1e9;
+			bestEOParamList.add(new EOParams(pParams, time));
 			eoNoImprovement = 1;
 			return pParams;
 		} else {
@@ -82,14 +86,14 @@ public class TeamParams {
 
 	public void printBestStats(Type mhtype) {
 		if(mhtype == Type.ROT) {
-			System.out.println("RoT best params");
+			System.out.println("RoT best params in TEAM");
 			for(RoTParams p : bestRoTParamList) {
-				System.out.printf("%5.4f, %5.4f, %5.4f\n", p.getTabuDurationFactor(), p.getAspirationFactor(), p.getGain());
+				System.out.printf("%5.1f, %5.4f, %5.4f, %5.4f\n", p.getTime(), p.getTabuDurationFactor(), p.getAspirationFactor(), p.getGain());
 			}
 		} else if (mhtype == Type.EO) {
-			System.out.println("EO best params");
+			System.out.println("EO best params in TEAM");
 			for(EOParams p : bestEOParamList) {
-				System.out.printf("%5.4f, %3d, %5.4f\n", p.getTau(), p.getPdf(), p.getGain());
+				System.out.printf("%5.1f, %5.4f, %3d, %5.4f\n", p.getTime(), p.getTau(), p.getPdf(), p.getGain());
 			}
 		}
 		
