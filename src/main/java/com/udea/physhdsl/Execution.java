@@ -86,7 +86,7 @@ public class Execution {
     		double initialTime = System.nanoTime();
         
     		for (int i = 0; i < teams.size(); i++) {
-    			teams.get(i).setTeam(i+1, model, config, kill);
+    			teams.get(i).setTeam(i, model, config, kill);
     			myPool.submit(teams.get(i));
     		    //teams.get(i).fork();
     		}
@@ -129,9 +129,7 @@ public class Execution {
 			}
     		
     		printStats(rep, bestWorker, time, createFile);
-    		
     		printSolution(createFile);
-    		
     		
     		model.verify(bestWorker.getBestConf().length, bestWorker.getBestConf());
     		LOGGER.log(Level.INFO,"\nExecution "+rep+": all teams have finished");
@@ -140,7 +138,7 @@ public class Execution {
     		LOGGER.log(Level.INFO,"Execution time: "+time+" ms");
     		
     		teams.get(bestTIndex).getWorkers().get(bestWorker.getWId()).printParams();
-    		
+    		teams.get(bestTIndex).teamParams.printBestStats(bestWorker.getMhtype());
     		
     		for (int i = 0; i < teams.size(); i++)  {
     			teams.get(i).clean();
@@ -148,7 +146,7 @@ public class Execution {
     		}
     		kill.set(false);
     		
-    		teams.get(bestTIndex).teamParams.printBestStats(bestWorker.getMhtype());
+    		
     		
     	}
     	printAVGs(bestWorker.getTarget(), createFile);

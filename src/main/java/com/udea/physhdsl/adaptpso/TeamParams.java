@@ -30,7 +30,7 @@ public class TeamParams {
 		bestEOParamList = new ArrayList<EOParams>();
 		globalReports = 0;
 		psoDelMem = psoDelMemGlobal;
-		rotNoImprovement = 1;
+		rotNoImprovement = 0;
 		eoNoImprovement = 0;
 		initialTime = System.nanoTime();
 	}
@@ -38,7 +38,7 @@ public class TeamParams {
 	public synchronized RoTParams updateGlobalRoTParams(RoTParams pParams) {
 		globalReports++;
 		//if(psoDelMem > 0 && globalReports % psoDelMem == 0) {
-		if(psoDelMem > 0 && rotNoImprovement % psoDelMem == 0) {
+		if(psoDelMem > 0 && rotNoImprovement == psoDelMem) {
 			bestRoTParams = new RoTParams(-1, -1, -1);
 			LOGGER.log(Level.INFO, "------------------------------------------Delete global memory "+rotNoImprovement);
 			rotNoImprovement = 0;
@@ -52,7 +52,7 @@ public class TeamParams {
 			bestRoTParams.setGain(pParams.getGain());;
 			double time = (System.nanoTime()-initialTime)/1e9;
 			bestRoTParamList.add(new RoTParams(pParams, time));
-			rotNoImprovement = 1;
+			rotNoImprovement = 0;
 			return pParams;
 		} else {
 			rotNoImprovement++;
@@ -63,7 +63,7 @@ public class TeamParams {
 	public synchronized EOParams updateGlobalEOParams(EOParams pParams) {
 		globalReports++;
 		//if(psoDelMem > 0 && globalReports % psoDelMem == 0) {
-		if(psoDelMem > 0 && eoNoImprovement % psoDelMem == 0) {
+		if(psoDelMem > 0 && eoNoImprovement == psoDelMem) {
 			eoNoImprovement = 0;
 			bestEOParams = new EOParams(-1, -1, -1);
 			LOGGER.log(Level.INFO, "********************************************Delete global memory");
@@ -76,7 +76,7 @@ public class TeamParams {
 			bestEOParams.setGain(pParams.getGain());
 			double time = (System.nanoTime()-initialTime)/1e9;
 			bestEOParamList.add(new EOParams(pParams, time));
-			eoNoImprovement = 1;
+			eoNoImprovement = 0;
 			return pParams;
 		} else {
 			eoNoImprovement++;

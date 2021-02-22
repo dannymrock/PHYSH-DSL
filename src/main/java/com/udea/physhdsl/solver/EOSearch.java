@@ -2,7 +2,6 @@ package com.udea.physhdsl.solver;
 
 import com.udea.physhdsl.ParamInformation;
 import com.udea.physhdsl.adaptpso.EOParams;
-import com.udea.physhdsl.adaptpso.RoTParams;
 import com.udea.physhdsl.adaptpso.TeamParams;
 import com.udea.physhdsl.model.QAPModel;
 
@@ -461,9 +460,10 @@ public class EOSearch extends Metaheuristic{
     	
     	if(pCurrent.getGain() > pBest.getGain()) {
     		// new best particle params
-    		psoNoImprovement = 1;
+    		psoNoImprovement = 0;
     		pBest = new EOParams(pCurrent.getTau(), pCurrent.getPdf(), pCurrent.getGain());
-    		LOGGER.log(Level.INFO, "-------------------- Delete local mem in particle RoT");
+    		// If current parameters are the best in particle, no adaption is carried out
+    		return;
     	}else { 
     		psoNoImprovement++;
     	}
@@ -497,8 +497,9 @@ public class EOSearch extends Metaheuristic{
     	
     	psoIters++;
     	//if(psoDelMem > 0 && psoIters % psoDelMem == 0) {
-    	if(psoDelMem > 0 && psoNoImprovement % psoDelMem == 0) {
+    	if(psoDelMem > 0 && psoNoImprovement == psoDelMem) {
     		//delete memory
+    		LOGGER.log(Level.INFO, "-------------------- Delete local mem in particle EO");
     		psoNoImprovement = 0;
     		pBest = new EOParams(-1, -1, -1);
     	}

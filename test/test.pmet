@@ -2,12 +2,12 @@ Config {
     size: 40
     model: QAP
     target: 3139370
-    maxTime: 60000
+    maxTime: 10000
     updatePoolI: 25000
     requestPoolI: 50000
-    autoParam: 10000 
-    numberOfTeams: 1
-    numberOfWorkersPerTeam: 8
+    autoParam: 1000 
+    numberOfTeams: 2
+    numberOfWorkersPerTeam: 4
     equalNumberOfWorkersPerTeam: true
 	filePath: /Users/dannymunera/Documents/repos/degree-work/tai40a.qap
 	sampleSize: 1
@@ -16,14 +16,19 @@ Config {
 	RoTS.aspirationFactor: -1
 	EO.tau: -1
 	EO.pdf: 1
-	Adapt.delMem: 10
+	Adapt.delMem: 1
 }
 
 Execution {
-	Team <1>{
+	Team <2>{
 		
-		Worker <8> {
+		Worker <2> {
 			MH: RoT
+			updatePool: 1
+			requestPool: 1
+		}
+		Worker <2> {
+			MH: Extremal
 			updatePool: 1
 			requestPool: 1
 		}

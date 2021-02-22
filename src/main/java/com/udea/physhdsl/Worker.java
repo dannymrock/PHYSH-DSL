@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -108,9 +109,6 @@ public class Worker extends RecursiveAction {
         this.endTime = endTime;
     }
     
-    public int getId() {
-    	return id;
-    }
     
     public void setId(int id) {
     	this.id = id;
@@ -124,8 +122,8 @@ public class Worker extends RecursiveAction {
     	this.size = size;
     }
     
-    public void setWorker(int i, QAPModel model, List<Pool> pools, Map<String, Object> configuration, AtomicBoolean kill, int tCost, boolean sLow, TeamParams tRef){
-        setId(i);
+    public void setWorker(int id, QAPModel model, List<Pool> pools, Map<String, Object> configuration, AtomicBoolean kill, int tCost, boolean sLow, TeamParams tRef){
+        setId(id);
         setPools(pools, configuration);
         setSize((int)configuration.get("size"));
         
@@ -396,11 +394,14 @@ public class Worker extends RecursiveAction {
     }
     
     public void adaptParameters() {
-    	//double currentTimems = (System.nanoTime() - initialTime)/1e6; 
-        //metaheuristic.adaptParameters(paramInfo, paramInfo.getCurrentDivLimit(currentTimems));
     	
-    	metaheuristic.adaptParametersPSO(paramInfo, tRef);
-        paramInfo.setNewInitial(currentCost, metaheuristic.variables);
+    	/*if(ThreadLocalRandom.current().nextDouble() > 0.5) {
+    		double currentTimems = (System.nanoTime() - initialTime)/1e6; 
+    		metaheuristic.adaptParameters(paramInfo, paramInfo.getCurrentDivLimit(currentTimems));
+    	} else {*/
+    		metaheuristic.adaptParametersPSO(paramInfo, tRef);
+    		paramInfo.setNewInitial(currentCost, metaheuristic.variables);
+    	//}
     }
     
     public void printParams() {

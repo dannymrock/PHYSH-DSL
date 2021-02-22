@@ -1,9 +1,7 @@
 package com.udea.physhdsl;
 
-import com.udea.physhdsl.adaptpso.RoTParams;
 import com.udea.physhdsl.adaptpso.TeamParams;
 import com.udea.physhdsl.model.QAPModel;
-import com.udea.physhdsl.solver.Metaheuristic;
 
 import java.util.List;
 import java.util.Map;
@@ -74,7 +72,7 @@ public class Team extends RecursiveAction{
         int nProc = Runtime.getRuntime().availableProcessors();
         
         
-        // get parameter for deleting global memeory
+        // get parameter for deleting global memory
         Object valOrNull = configuration.get("Adapt.delMem");
         int psoDelMem = valOrNull == null ? -1 : (int) valOrNull;
         
@@ -86,8 +84,11 @@ public class Team extends RecursiveAction{
         ForkJoinPool myPool = new ForkJoinPool(nProc);
         //AtomicBoolean kill = new AtomicBoolean(false);
 
-        for (int i = 0; i < workers.size(); i++) {        
-        	workers.get(i).setWorker((id*100)+i, new QAPModel(myModel), pools, configuration, kill, targetCost, strictLow, teamParams);
+        for (int i = 0; i < workers.size(); i++) {
+        	//Worker id is represented by three digits team number worker number
+        	//E.g. 103 Team 1 Worker 03
+        	int wId = ((id + 1) * 100) + i;
+        	workers.get(i).setWorker(wId, new QAPModel(myModel), pools, configuration, kill, targetCost, strictLow, teamParams);
             myPool.submit(workers.get(i));
             //workers.get(i).compute();
             //w.fork();
@@ -108,7 +109,7 @@ public class Team extends RecursiveAction{
         	}
         }
         bestWorkerStats = workers.get(bestIndex).getSolverStats();  
-        bestWorkerStats.setWId(id);
+        bestWorkerStats.setWId(bestIndex);
                 
         //workers.parallelStream().map(w -> w.solve()).collect(Collectors.toList());
         LOGGER.log(Level.FINE, "Team: all workers in team "+ id +" have finished");
