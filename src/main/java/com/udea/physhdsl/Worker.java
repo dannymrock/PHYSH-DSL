@@ -66,6 +66,8 @@ public class Worker extends RecursiveAction {
     private int paramI;
     private TeamParams tRef;
     
+    private boolean autoParamRandom;
+    
     
     
     public int getnChange() {
@@ -144,6 +146,12 @@ public class Worker extends RecursiveAction {
     	valOrNull = configuration.get("autoParam");
     	autoParam = (valOrNull != null);
     	paramI = autoParam ? (int) valOrNull: -1;
+    	
+    	valOrNull = configuration.get("Adapt.random");
+    	autoParamRandom = (valOrNull != null);
+    	//paramI = autoParam ? (int) valOrNull: -1;
+    	
+    	
     	
     	LOGGER.log(Level.INFO, MHType.toString()+"-"+id+": MaxTime "+maxTime+" MaxIters "+maxIters+" MaxRestart "+maxRestart
     			+(autoParam?" with auto parametrization":" with fixed parameters"));
@@ -399,9 +407,12 @@ public class Worker extends RecursiveAction {
     		double currentTimems = (System.nanoTime() - initialTime)/1e6; 
     		metaheuristic.adaptParameters(paramInfo, paramInfo.getCurrentDivLimit(currentTimems));
     	} else {*/
+    	if (autoParamRandom) {
+    		metaheuristic.adaptParametersRandom();
+    	} else {
     		metaheuristic.adaptParametersPSO(paramInfo, tRef);
     		paramInfo.setNewInitial(currentCost, metaheuristic.variables);
-    	//}
+    	}
     }
     
     public void printParams() {

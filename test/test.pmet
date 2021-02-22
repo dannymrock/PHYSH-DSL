@@ -17,6 +17,7 @@ Config {
 	EO.tau: -1
 	EO.pdf: 1
 	Adapt.delMem: 1
+	Adapt.random: 1
 }
 
 Execution {

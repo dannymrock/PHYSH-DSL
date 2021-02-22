@@ -505,6 +505,17 @@ public class EOSearch extends Metaheuristic{
     	}
 	}
     
+    public void adaptParametersRandom() {
+    	if (pdfS == Func.POWER) {
+            tau = powDown + (powUp - powDown) * ThreadLocalRandom.current().nextDouble();
+        }else if (pdfS == Func.EXPONENTIAL) {
+            tau = expDown + (expUp - expDown) * ThreadLocalRandom.current().nextDouble();
+        }if (pdfS == Func.GAMMA) {
+            tau = gammaDown + (gammaUp - gammaDown) * ThreadLocalRandom.current().nextDouble();
+        }
+        pCurrent = new EOParams(tau, pdfS.getValue(), -1); 
+    	initPDF(pdfS); 
+    }
     
     public void printParams() {
     	System.out.println("EO particle params");

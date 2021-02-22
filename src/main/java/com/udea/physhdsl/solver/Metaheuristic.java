@@ -260,5 +260,10 @@ public class Metaheuristic {
 		LOGGER.log(Level.WARNING, "must be overwritten by each descendant");		
     }
 
+
+	public void adaptParametersRandom() {
+		LOGGER.log(Level.WARNING, "must be overwritten by each descendant");			
+	}
+
 }
 

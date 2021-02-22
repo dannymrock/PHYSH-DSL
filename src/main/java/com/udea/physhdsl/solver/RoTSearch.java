@@ -35,10 +35,10 @@ public class RoTSearch extends Metaheuristic{
     //private double tdu = 1.8;
     
     private double tdl = 0.2;
-    private double tdu = 20.0;
+    private double tdu = 8.0;
 
     private double al = 0.0;
-    private double au = 10.0;
+    private double au = 5.0;
     
     
     // PSO-adapt
@@ -394,6 +394,16 @@ public class RoTSearch extends Metaheuristic{
     		psoNoImprovement = 0;
     		pBest = new RoTParams(-1, -1, -1);
     	}
+    }
+    
+    
+    
+    public void adaptParametersRandom() {
+    	double newTD  = tdl + (tdu - tdl) * ThreadLocalRandom.current().nextDouble();
+    	double newAF = al + (au - al) * ThreadLocalRandom.current().nextDouble();
+        pCurrent = new RoTParams(newTD, newAF, -1);
+        setParams(pCurrent);
+        
     }
     
     public void setParams(RoTParams params) {
