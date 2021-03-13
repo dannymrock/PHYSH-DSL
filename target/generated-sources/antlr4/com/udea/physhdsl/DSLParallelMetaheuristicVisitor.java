@@ -1,17 +1,17 @@
-// Generated from com/udea/degreework/DSLParallelMetaheuristic.g4 by ANTLR 4.5.1
-package com.udea.degreework;
+// Generated from com/udea/physhdsl/DSLParallelMetaheuristic.g4 by ANTLR 4.5.1
+package com.udea.physhdsl;
 
 	import java.util.Map;
 	import java.util.HashMap;
 
-import com.udea.physhdsl.Execution;
-import com.udea.physhdsl.Team;
-import com.udea.physhdsl.interpreter.ast.ASTNode;
-import com.udea.physhdsl.interpreter.ast.Assign;
-import com.udea.physhdsl.interpreter.ast.Constant;
-import com.udea.physhdsl.interpreter.ast.PoolAST;
-import com.udea.physhdsl.interpreter.ast.TeamAST;
-import com.udea.physhdsl.interpreter.ast.WorkerAST;
+	import com.udea.physhdsl.interpreter.ast.ASTNode;
+	import com.udea.physhdsl.interpreter.ast.Assign;
+	import com.udea.physhdsl.interpreter.ast.Constant;
+	import com.udea.physhdsl.Execution;
+	import com.udea.physhdsl.Team;
+	import com.udea.physhdsl.interpreter.ast.PoolAST;
+	import com.udea.physhdsl.interpreter.ast.WorkerAST;
+	import com.udea.physhdsl.interpreter.ast.TeamAST;
 
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 

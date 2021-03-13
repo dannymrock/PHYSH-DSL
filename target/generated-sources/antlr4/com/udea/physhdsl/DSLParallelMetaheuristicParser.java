@@ -1,17 +1,17 @@
-// Generated from com/udea/degreework/DSLParallelMetaheuristic.g4 by ANTLR 4.5.1
-package com.udea.degreework;
+// Generated from com/udea/physhdsl/DSLParallelMetaheuristic.g4 by ANTLR 4.5.1
+package com.udea.physhdsl;
 
 	import java.util.Map;
 	import java.util.HashMap;
 
-import com.udea.physhdsl.Execution;
-import com.udea.physhdsl.Team;
-import com.udea.physhdsl.interpreter.ast.ASTNode;
-import com.udea.physhdsl.interpreter.ast.Assign;
-import com.udea.physhdsl.interpreter.ast.Constant;
-import com.udea.physhdsl.interpreter.ast.PoolAST;
-import com.udea.physhdsl.interpreter.ast.TeamAST;
-import com.udea.physhdsl.interpreter.ast.WorkerAST;
+	import com.udea.physhdsl.interpreter.ast.ASTNode;
+	import com.udea.physhdsl.interpreter.ast.Assign;
+	import com.udea.physhdsl.interpreter.ast.Constant;
+	import com.udea.physhdsl.Execution;
+	import com.udea.physhdsl.Team;
+	import com.udea.physhdsl.interpreter.ast.PoolAST;
+	import com.udea.physhdsl.interpreter.ast.WorkerAST;
+	import com.udea.physhdsl.interpreter.ast.TeamAST;
 
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -199,12 +199,22 @@ public class DSLParallelMetaheuristicParser extends Parser {
 
 					System.out.println("");
 					for(ASTNode configAssign : configBody) {
-						configAssign.execute(configSymbolTable);
+						try {
+							configAssign.execute(configSymbolTable);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					
 					List<Team> teams = new ArrayList<Team>();
 					for(ASTNode element : executionBody) {
-						teams.addAll((ArrayList<Team>)element.execute(symbolTable));
+						try {
+							teams.addAll((ArrayList<Team>)element.execute(symbolTable));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					Execution execution = new Execution(teams);
 					execution.loadConfig(configSymbolTable);
@@ -216,9 +226,6 @@ public class DSLParallelMetaheuristicParser extends Parser {
 			_localctx.exception = re;
 			_errHandler.reportError(this, re);
 			_errHandler.recover(this, re);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		finally {
 			exitRule();

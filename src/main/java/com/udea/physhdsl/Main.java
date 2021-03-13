@@ -8,9 +8,9 @@ import java.util.logging.Logger;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import com.udea.degreework.DSLParallelMetaheuristicLexer;
-import com.udea.degreework.DSLParallelMetaheuristicParser;
-import com.udea.degreework.DSLParallelMetaheuristicParser.StartContext;
+import com.udea.physhdsl.DSLParallelMetaheuristicLexer;
+import com.udea.physhdsl.DSLParallelMetaheuristicParser;
+import com.udea.physhdsl.DSLParallelMetaheuristicParser.StartContext;
 
 public class Main {
 	private static final Logger LOGGER = Logger.getLogger( Main.class.getName() );
