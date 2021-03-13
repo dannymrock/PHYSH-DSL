@@ -2,6 +2,7 @@ package com.udea.physhdsl.solver;
 
 import com.udea.physhdsl.ParamInformation;
 import com.udea.physhdsl.adaptpso.EOParams;
+import com.udea.physhdsl.adaptpso.RoTParams;
 import com.udea.physhdsl.adaptpso.TeamParams;
 import com.udea.physhdsl.model.QAPModel;
 
@@ -92,9 +93,9 @@ public class EOSearch extends Metaheuristic{
     
     private double tauV;
     //PSO params
-	private double c1 = 2.0, c2 = 2.0;
+	private double c1 = 1.0, c2 =1.0;
 	//double tetha = c1+c2;
-	private double w = 0.9;
+	private double w = 0.5;
 	//double chi = 2*(0.5)/Math.abs(2-tetha-Math.sqrt(tetha*tetha-4*tetha));
 	private int psoIters;
 	private int psoDelMem;
@@ -139,6 +140,13 @@ public class EOSearch extends Metaheuristic{
         paramHisto = new ArrayList<EOParams>();
         iniTime = System.nanoTime();
         
+        
+        valOrNull = configuration.get("Adapt.c1");
+        c1 = valOrNull == null ? 2.0 : Double.parseDouble((String) valOrNull);
+        valOrNull = configuration.get("Adapt.c2");
+        c2 = valOrNull == null ? 2.0 : Double.parseDouble((String) valOrNull);
+        valOrNull = configuration.get("Adapt.w");
+        w = valOrNull == null ? 0.9 : Double.parseDouble((String) valOrNull);
     }
 
     /**
@@ -516,6 +524,25 @@ public class EOSearch extends Metaheuristic{
         pCurrent = new EOParams(tau, pdfS.getValue(), -1); 
     	initPDF(pdfS); 
     }
+    
+    public void adaptParametersCoop(ParamInformation paramInfo, TeamParams tRef) {    	
+    	LOGGER.log(Level.INFO, "-------------------- Cooperative Adapting parameters RoT");
+
+    	if (paramInfo.gain() == 0.0) {
+    		pCurrent.setTau(powDown + (powUp - powDown) * ThreadLocalRandom.current().nextDouble());
+            pCurrent.setGain(-1.0);
+    	}else {
+    		pCurrent.setGain(paramInfo.gain());
+    		// send best parameters in particle and update team's global best
+    		EOParams gBest = tRef.updateCoopEOParams(pCurrent);
+    		pCurrent = new EOParams(gBest);
+    		if (pCurrent.getTau() < powDown) pCurrent.setTau(powDown);
+        	if (pCurrent.getTau() > powUp) pCurrent.setTau(powUp); 
+    	}
+    	tau = pCurrent.getTau();
+    	initPDF(pdfS);
+    }
+    
     
     public void printParams() {
     	System.out.println("EO particle params");

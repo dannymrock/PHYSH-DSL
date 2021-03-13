@@ -265,5 +265,9 @@ public class Metaheuristic {
 		LOGGER.log(Level.WARNING, "must be overwritten by each descendant");			
 	}
 
+	public void adaptParametersCoop(ParamInformation paramInfo, TeamParams tRef) {  
+		LOGGER.log(Level.WARNING, "must be overwritten by each descendant");
+	}
+	
 }
 

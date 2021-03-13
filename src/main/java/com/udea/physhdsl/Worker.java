@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RecursiveAction;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,7 +65,7 @@ public class Worker extends RecursiveAction {
     private int paramI;
     private TeamParams tRef;
     
-    private boolean autoParamRandom;
+    private int autoParamType;
     
     
     
@@ -147,9 +146,8 @@ public class Worker extends RecursiveAction {
     	autoParam = (valOrNull != null);
     	paramI = autoParam ? (int) valOrNull: -1;
     	
-    	valOrNull = configuration.get("Adapt.random");
-    	autoParamRandom = (valOrNull != null);
-    	//paramI = autoParam ? (int) valOrNull: -1;
+    	valOrNull = configuration.get("Adapt.type");
+    	autoParamType = valOrNull == null ? 0 : (int) valOrNull;
     	
     	
     	
@@ -203,11 +201,10 @@ public class Worker extends RecursiveAction {
     
     @Override
     public void compute() {
-        int cost;
 
         LOGGER.log(Level.INFO, MHType.toString()+"-"+id+": Starting solving proces");
         initialTime = System.nanoTime();
-        cost = solve();
+        solve();
         double exTime = (System.nanoTime() - initialTime)/1e6;
 
         LOGGER.log(Level.INFO,"             Solving process finished Meta type "+ MHType.toString()+"-"+id+". Time: "+exTime+" ms best cost: "+ bestCost);
@@ -242,7 +239,7 @@ public class Worker extends RecursiveAction {
           //  this.nodeConfig.setUpdateI(2n * this.nodeConfig.getrequestI());
     }
 
-    public int solve() {
+    public void solve() {
     	LOGGER.log(Level.FINE,"WORKER " +MHType+" pasando por solve.");
         initVar(target, strictLow);
         currentCost = metaheuristic.costOfSolution();
@@ -305,6 +302,13 @@ public class Worker extends RecursiveAction {
             if(autoParam && nIter % paramI == 0){
             	adaptParameters();
             }
+            
+            //if(autoParam && itersWhitoutImprovements == paramI) {
+            //	adaptParameters();
+            //  itersWhitoutImprovements = 0;
+            //}
+                
+            
              
         }
         //this.heuristicSolver.printPopulation();
@@ -316,7 +320,7 @@ public class Worker extends RecursiveAction {
             System.out.print(" "+bestConf[i]);
         System.out.println(" ");*/
 
-        return this.bestCost;
+        return;
     }
 
     private void updateCosts(){
@@ -336,15 +340,14 @@ public class Worker extends RecursiveAction {
                 kill.set(true);
             }
             //Console.OUT.println("La heuristica consigue mejorar el costo. CPLSNode en " + here);
-            itersWhitoutImprovements = 0;
-
-        }else{
-            itersWhitoutImprovements++;
         }
         
         // Check whether it is best cost in Interval (for parameters adaptation)
         if(autoParam && currentCost < paramInfo.getBestCostInInterval()) {
         	paramInfo.setNewBest(currentCost, metaheuristic.getVariables());
+            itersWhitoutImprovements = 0;
+        }else{
+            itersWhitoutImprovements++;
         }
         
     }
@@ -407,10 +410,20 @@ public class Worker extends RecursiveAction {
     		double currentTimems = (System.nanoTime() - initialTime)/1e6; 
     		metaheuristic.adaptParameters(paramInfo, paramInfo.getCurrentDivLimit(currentTimems));
     	} else {*/
-    	if (autoParamRandom) {
+    	if (autoParamType == 0) {
+    		// Random
+    		//System.out.println("adapt random ");
     		metaheuristic.adaptParametersRandom();
-    	} else {
+    	} else if(autoParamType == 1){
+    		//System.out.println("adapt jonathan");
+    		double currentTimems = (System.nanoTime() - initialTime)/1e6; 
+    		metaheuristic.adaptParameters(paramInfo, paramInfo.getCurrentDivLimit(currentTimems));
+    	} else if(autoParamType == 2){
+    		//System.out.println("adapt pso");
     		metaheuristic.adaptParametersPSO(paramInfo, tRef);
+    		paramInfo.setNewInitial(currentCost, metaheuristic.variables);
+    	} else {
+    		metaheuristic.adaptParametersCoop(paramInfo, tRef);
     		paramInfo.setNewInitial(currentCost, metaheuristic.variables);
     	}
     }

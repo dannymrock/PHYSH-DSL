@@ -34,11 +34,11 @@ public class RoTSearch extends Metaheuristic{
     //private double tdl = 0.2;
     //private double tdu = 1.8;
     
-    private double tdl = 0.2;
-    private double tdu = 8.0;
+    private double tdl = 4.0;
+    private double tdu = 20.0;
 
     private double al = 0.0;
-    private double au = 5.0;
+    private double au = 10.0;
     
     
     // PSO-adapt
@@ -49,8 +49,8 @@ public class RoTSearch extends Metaheuristic{
     private double TDV;
     private double AFV;
     //PSO params
-	private double c1 = 2.0, c2 = 2.0;
-	private double w = 0.8;
+	private double c1 = 1.0, c2 = 1.0;
+	private double w = 0.5;
     
 	private int psoIters;
 	private int psoDelMem;
@@ -80,6 +80,18 @@ public class RoTSearch extends Metaheuristic{
         pBest = new RoTParams(-1, -1, -1);
         paramHisto = new ArrayList<RoTParams>();
         iniTime =  System.nanoTime();
+        
+        
+        valOrNull = configuration.get("Adapt.c1");
+        c1 = valOrNull == null ? 2.0 : Double.parseDouble((String) valOrNull);
+        valOrNull = configuration.get("Adapt.c2");
+        c2 = valOrNull == null ? 2.0 : Double.parseDouble((String) valOrNull);
+        valOrNull = configuration.get("Adapt.w");
+        w = valOrNull == null ? 0.9 : Double.parseDouble((String) valOrNull);
+        
+        
+        
+        
     }
 
     //private int tabuDurationLower;
@@ -201,8 +213,8 @@ public class RoTSearch extends Metaheuristic{
 
             //tabuList( move.getFirst(), cop_.variables(move.getSecond())) = this.nIter + (cube() * this.tabuDuration) as Int;
             int t1, t2;
-            t1 = (int)(cube() * tabuDuration); 
-            t2 = (int)(cube() * tabuDuration);
+            t1 = (int)(randomRoT() * tabuDuration); 
+            t2 = (int)(randomRoT() * tabuDuration);
             //do t1 = (int) (cube() * tabuDuration); while(t1 <= 2);
             //do t2 = (int) (cube() * tabuDuration); while(t2 <= 2);
 
@@ -224,10 +236,10 @@ public class RoTSearch extends Metaheuristic{
         return (int)(ThreadLocalRandom.current().nextDouble()*(up - low + 1)) + low;
     }
 
-    private double cube(){
+    private double randomRoT(){
         double ran1 = ThreadLocalRandom.current().nextDouble();
-        if (tabuDurationFactorUS < 0)
-            return ran1;
+        //if (tabuDurationFactorUS < 0)
+          //  return ran1;
         return ran1 * ran1 * ran1;
     }
 
@@ -357,6 +369,7 @@ public class RoTSearch extends Metaheuristic{
     		psoNoImprovement++;
     	}
     	
+    	// send best parameters in particle and update team's global best
     	RoTParams gBest = tRef.updateGlobalRoTParams(pCurrent);
     	
     	
@@ -394,6 +407,28 @@ public class RoTSearch extends Metaheuristic{
     		psoNoImprovement = 0;
     		pBest = new RoTParams(-1, -1, -1);
     	}
+    }
+    
+    
+    public void adaptParametersCoop(ParamInformation paramInfo, TeamParams tRef) {    	
+    	LOGGER.log(Level.INFO, "-------------------- Cooperative Adapting parameters RoT");
+
+    	if (paramInfo.gain() == 0.0) {
+    		pCurrent.setAspirationFactor(al + (au - al) * ThreadLocalRandom.current().nextDouble());
+            pCurrent.setTabuDurationFactor(tdl + (tdu - tdl) * ThreadLocalRandom.current().nextDouble());
+            pCurrent.setGain(-1.0);
+    	}else {
+    		pCurrent.setGain(paramInfo.gain());
+    		// send best parameters in particle and update team's global best
+    		RoTParams gBest = tRef.updateCoopRoTParams(pCurrent);
+    		pCurrent = new RoTParams(gBest);
+    		if(pCurrent.getTabuDurationFactor() < tdl) pCurrent.setTabuDurationFactor(tdl);
+        	if(pCurrent.getTabuDurationFactor() > tdu) pCurrent.setTabuDurationFactor(tdu);
+        	if(pCurrent.getAspirationFactor() < al) pCurrent.setAspirationFactor(al);
+        	if(pCurrent.getAspirationFactor()  > au) pCurrent.setAspirationFactor(au);
+    	}
+    	
+    	setParams(pCurrent);	
     }
     
     

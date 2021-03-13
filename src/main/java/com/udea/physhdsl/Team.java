@@ -77,7 +77,7 @@ public class Team extends RecursiveAction{
         int psoDelMem = valOrNull == null ? -1 : (int) valOrNull;
         
         // Shared object for Team Parameters
-        teamParams = new TeamParams(psoDelMem * workers.size());
+        teamParams = new TeamParams(psoDelMem, workers.size());
         
         //ExecutorService EXEC = Executors.newCachedThreadPool();
         

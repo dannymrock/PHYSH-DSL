@@ -47,9 +47,9 @@ public class WorkerAST implements ASTNode {
 			if (mapObject.get("MH") == null) {
 				throw new Exception("Worker: MH is Expected");
 			} else if (mapObject.get("requestPool") == null) {
-				throw new Exception("Worker: requestPool is Expected");
+				//throw new Exception("Worker: requestPool is Expected");
 			} else if (mapObject.get("updatePool") == null) {
-				throw new Exception("Worker: updatePool is Expected");
+				//throw new Exception("Worker: updatePool is Expected");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

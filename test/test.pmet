@@ -2,10 +2,10 @@ Config {
     size: 40
     model: QAP
     target: 3139370
-    maxTime: 10000
-    updatePoolI: 25000
-    requestPoolI: 50000
-    autoParam: 1000 
+    maxTime: 60000
+    updatePoolI: 2000000000
+    requestPoolI: 2000000000
+    autoParam: 10000
     numberOfTeams: 2
     numberOfWorkersPerTeam: 4
     equalNumberOfWorkersPerTeam: true
@@ -16,8 +16,8 @@ Config {
 	RoTS.aspirationFactor: -1
 	EO.tau: -1
 	EO.pdf: 1
-	Adapt.delMem: 1
-	Adapt.random: 1
+	Adapt.type: 3
+	Adapt.delMem: 5
 }
 
 Execution {
@@ -37,11 +37,6 @@ Execution {
 			ID: 1
 			policy: Elite
             size: 10
-		}
-		Pool { 
-			ID: 2
-			policy: Diverse
-			size: 10
 		}
 	}
 }
