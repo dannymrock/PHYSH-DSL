@@ -1,0 +1,28 @@
+Config {
+    size: 40
+    model: QAP
+    target: 3139370
+    maxTime: 60000
+    numberOfTeams: 2
+    numberOfWorkersPerTeam: 4
+    equalNumberOfWorkersPerTeam: true
+	filePath: /Users/dannymunera/Documents/repos/degree-work/tai40a.qap
+	sampleSize: 1
+	errorRange: 1
+	RoTS.tabuDurationFactor: -1
+	RoTS.aspirationFactor: -1
+	EO.tau: -1
+	EO.pdf: 1
+	
+}
+
+Execution {
+	Team <2>{
+		Worker <2> {
+			MH: RoT
+		}
+		Worker <2> {
+			MH: Extremal
+		}
+	}
+}
